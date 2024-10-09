@@ -15,6 +15,10 @@ include $(top_builddir)/src/Makefile.global
 
 ifeq ($(enable_tap_tests),yes)
 
+SUBDIRS = PostgreSQL/Test
+
+$(recurse)
+
 installdirs:
 	$(MKDIR_P) '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/Test'
 
@@ -25,6 +29,8 @@ install: all installdirs
 	$(INSTALL_DATA) $(srcdir)/PostgreSQL/Test/Cluster.pm '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/Test/Cluster.pm'
 	$(INSTALL_DATA) $(srcdir)/PostgreSQL/Test/BackgroundPsql.pm '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/Test/BackgroundPsql.pm'
 	$(INSTALL_DATA) $(srcdir)/PostgreSQL/Version.pm '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/Version.pm'
+	$(INSTALL_DATA) $(srcdir)/PostgreSQL/Test/Session.pm '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/Test/Session.pm'
+	$(INSTALL_DATA) $(srcdir)/PostgreSQL/PqFFI.pm '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/PqFFI.pm'
 
 uninstall:
 	rm -f '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/Test/Utils.pm'
@@ -33,5 +39,7 @@ uninstall:
 	rm -f '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/Test/Cluster.pm'
 	rm -f '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/Test/BackgroundPsql.pm'
 	rm -f '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/Version.pm'
+	rm -f '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/Test/Session.pm'
+	rm -f '$(DESTDIR)$(pgxsdir)/$(subdir)/PostgreSQL/PqFFI.pm'
 
 endif
