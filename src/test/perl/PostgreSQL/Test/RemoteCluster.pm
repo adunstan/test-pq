@@ -141,11 +141,17 @@ this node. Suitable for passing to psql, DBD::Pg, etc.
 sub connstr
 {
 	my ($self, $dbname) = @_;
-	my $pgport = $self->port;
-	my $pghost = $self->host;
+	my $pgport = $self->{_port};
+	my $pghost = $self->{_host};
+	my $paramstr = "";
+	while (my ($k,$v) = each %{$self->{_params}})
+	{
+		# XXX probably need to do some escape quoting here
+		$paramstr .= " $k=$v";
+	}
 	if (!defined($dbname))
 	{
-		return "port=$pgport host=$pghost";
+		return "port=$pgport host=$pghost$paramstr";
 	}
 
 	# Escape properly the database string before using it, only
@@ -153,7 +159,7 @@ sub connstr
 	$dbname =~ s#\\#\\\\#g;
 	$dbname =~ s#\'#\\\'#g;
 
-	return "port=$pgport host=$pghost dbname='$dbname'";
+	return "port=$pgport host=$pghost dbname='$dbname'$paramstr";
 }
 
 =pod
@@ -194,7 +200,7 @@ sub dump_info
 
 =pod
 
-=item PostgreSQL::Test::RemoteCluster->new(node_name, host, port)
+=item PostgreSQL::Test::RemoteCluster->new(node_name, host, port, %params)
 
 Build a new object of class C<PostgreSQL::Test::RemoteCluster>
 (or of a subclass, if you have one.
@@ -208,12 +214,17 @@ The port the remote node is using
 
 The host name or IP address of the remote node
 
+=item %params
+
+key value pairs of extra connections string paameters, such as sslmode,
+user, passfile.
+
 =cut
 
 sub new
 {
 	my $class = shift;
-	my ($name, $host, $port) = @_;
+	my ($name, $host, $port, %params) = @_;
 
 	my $testname = basename($0);
 	$testname =~ s/\.[^.]+$//;
@@ -221,6 +232,7 @@ sub new
 		_port => $port,
 		_host => $host,
 		_name => $name,
+		_params => { %params },
 	};
 
 	bless $node, $class;
